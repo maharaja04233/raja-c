@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-  <title>WebSocket Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat App</title>
+
 </head>
 <body>
   <nav>
@@ -21,38 +21,48 @@
   </div>
 
   <script>
-    const messagesDiv = document.getElementById('messages');
-    const messageInput = document.getElementById('messageInput');
-    const sendButton = document.getElementById('sendButton');
-    const ws = new WebSocket('ws:https://server-raja.vercel.app/');
-    ws.binaryType = 'text';
-
     let username = '';
     while (!username) {
       username = prompt('Enter your username:').trim();
     }
 
+    const messagesDiv = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const ws = new WebSocket(`ws://${location.host}`);
+
+    ws.addEventListener('open', () => {
+      ws.send(JSON.stringify({ type: 'join', username }));
+    });
+
+    ws.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'history') {
+        data.messages.forEach((msg) => displayMessage(msg));
+      } else if (data.type === 'chat') {
+        displayMessage(data);
+      }
+    });
+
     sendButton.addEventListener('click', () => {
       const text = messageInput.value.trim();
-      if (text) {
-        const message = { username, text };
+      if (text !== '') {
+        const message = {
+          type: 'chat',
+          username,
+          text,
+        };
         ws.send(JSON.stringify(message));
         displayMessage(message, true);
         messageInput.value = '';
       }
     });
 
-    ws.addEventListener('message', async (event) => {
-      const data = await event.data.text();
-      const message = JSON.parse(data);
-      displayMessage(message);
-    });
-
-    function displayMessage(message, isSender = false) {
+    function displayMessage({ username, text }, isSender = false) {
       const messageContainer = document.createElement('div');
       const messageElement = document.createElement('div');
-
-      messageElement.innerHTML = `<strong>${message.username}:</strong> ${message.text}`;
+      messageElement.innerHTML = `<strong>${username}:</strong> ${parseEmojis(text)}`;
 
       messageContainer.classList.add('message-container');
       if (isSender) {
@@ -65,6 +75,15 @@
       messageContainer.appendChild(messageElement);
       messagesDiv.appendChild(messageContainer);
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function parseEmojis(text) {
+      return text
+        .replace(/:\)/g, '😊')
+        .replace(/:D/g, '😄')
+        .replace(/:\(/g, '😞')
+        .replace(/<3/g, '❤️')
+        .replace(/:poop:/g, '💩');
     }
   </script>
 </body>
