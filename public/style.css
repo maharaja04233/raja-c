@@ -1,0 +1,126 @@
+/* Ensure the page takes full height */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Navbar styling (unchanged) */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background-color: #333;
+  color: #fff;
+}
+nav .brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Chat container with background image */
+.chat-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 56px); /* Adjust for nav height */
+  background-image: url('your-ground-image.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+/* Add a translucent overlay for better readability */
+.chat-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+/* Messages */
+.messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+  z-index: 1;
+}
+
+/* Individual messages styling (unchanged) */
+.message-container {
+  display: flex;
+  align-items: flex-start;
+  margin: 10px;
+}
+.message-bubble {
+  background-color: #f8f9fa;
+  padding: 10px 16px;
+  border-radius: 50px;
+  max-width: 60%;
+  word-wrap: break-word;
+  box-shadow: 0 0 50px rgba(0,0,0,0.05);
+}
+.sender-message-container {
+  justify-content: flex-end;
+}
+.sender-message-bubble {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Input area */
+.message-input-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  z-index: 1;
+}
+#messageInput {
+  flex-grow: 1;
+  margin-right: 6px;
+  border: none;
+  outline: none;
+  border-radius: 50px;
+  height: 30px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  padding: 10px 16px;
+}
+#sendButton {
+  background-color: #007bff;
+  border-radius: 50px;
+  outline: none;
+  border: none;
+  padding: 14px 16px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+#sendButton:hover {
+  box-shadow: 0 0 50px rgba(0,0,0,0.05);
+}
+#sendButton:active {
+  background-color: #3b9aff;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .chat-container {
+    background-position: top center;
+    background-size: contain;
+  }
+}
+
+/* Sent messages (you) */
+.sender-message-bubble {
+  background-color: #61ad4a; /* Green for sent messages */
+  color: white;
+}
+
+/* Received messages (others) */
+.message-container:not(.sender-message-container) .message-bubble {
+  background-color: #e0e0e0;
+  color: #333;
+}
